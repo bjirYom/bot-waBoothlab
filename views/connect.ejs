@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Hubungkan WhatsApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      min-height: 100vh;
+      background-color: #f0f2f5;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: #343a40;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 30px;
+      font-size: 22px;
+      color: #ffc107;
+      text-align: center;
+    }
+
+    .sidebar a {
+      color: #ccc;
+      text-decoration: none;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 4px;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #495057;
+      color: #fff;
+    }
+
+    .main {
+      flex: 1;
+      padding: 30px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    #qrcode {
+      margin: 20px auto;
+      text-align: center;
+    }
+
+    .status {
+      text-align: center;
+      font-size: 18px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .info-text {
+      text-align: center;
+      font-size: 14px;
+      color: gray;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px;
+      }
+
+      .sidebar h2 {
+        display: none;
+      }
+
+      .main {
+        padding: 20px;
+      }
+      
+    }
+
+    
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>📚 Boothlab</h2>
+    <a href="/crud">📋 Context List</a>
+    <a href="/crud/system" >🧠 System Prompt</a>
+    <a href="/unanswered">❌ Pesan error</a>
+    <a href="/connect" class="active">💬 Hubungkan Ke whatsapp</a>
+  </div>
+
+  <div class="main">
+    <h1>💬 Hubungkan ke WhatsApp</h1>
+
+   <div id="qrcode">
+  <% if (qr) { %>
+    <img src="<%= qr %>" alt="QR Code" width="250" />
+  <% } else { %>
+    <div>QR belum tersedia.</div>
+  <% } %>
+</div>
+
+
+
+    <div class="status" style="color: <%= isConnected ? 'green' : 'orange' %>">
+  <%= isConnected ? '✅ Terhubung ke WhatsApp!' : '⏳ Belum terhubung. Silakan scan QR.' %>
+</div>
+
+<div class="info-text">
+  <% if (isConnected && connectedNumber) { %>
+    Terhubung ke: <a href="https://wa.me/<%= connectedNumber %>" target="_blank">+<%= connectedNumber %></a><br>
+    QR tetap ditampilkan sebagai informasi. Tidak perlu scan ulang jika sudah terhubung.
+  <% } %>
+</div>
+
+
+    
+
+    
+
+
+
+
+    <script>
+      // Auto-refresh QR code setiap 10 detik
+      setTimeout(() => location.reload(), 10000);
+    </script>
+  </div>
+</body>
+</html>

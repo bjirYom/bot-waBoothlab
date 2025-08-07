@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>System Prompts</title>
+  <style>
+    /* Gaya diambil dari halaman context */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      min-height: 100vh;
+      background-color: #f0f2f5;
+    }
+    .sidebar {
+      width: 220px;
+      background-color: #343a40;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+    .sidebar h2 {
+      margin-bottom: 30px;
+      font-size: 22px;
+      color: #ffc107;
+      text-align: center;
+    }
+    .sidebar a {
+      color: #ccc;
+      text-decoration: none;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 4px;
+      display: block;
+      transition: 0.3s;
+    }
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #495057;
+      color: #fff;
+    }
+    .main {
+      flex: 1;
+      padding: 30px;
+    }
+    h1 { margin-bottom: 20px; color: #333; }
+    .add-btn {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 16px;
+      background-color: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .add-btn:hover { background-color: #218838; }
+    .prompt-list {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .prompt-item {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+    }
+    .prompt-item:last-child { border-bottom: none; }
+    .content {
+      margin: 5px 0;
+      color: #555;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      transition: all 0.3s ease;
+    }
+    .content.expanded {
+      -webkit-line-clamp: unset;
+      display: block;
+      max-height: none;
+      overflow: visible;
+    }
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: #007bff;
+      cursor: pointer;
+      font-size: 14px;
+      margin-bottom: 5px;
+      padding: 0;
+      display: none;
+    }
+    .toggle-btn:hover { text-decoration: underline; }
+    .actions a {
+      margin-right: 10px;
+      text-decoration: none;
+      color: #007bff;
+    }
+    .actions a:hover { text-decoration: underline; }
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px;
+      }
+      .sidebar h2 { display: none; }
+      .main { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>📚 Boothlab</h2>
+    <a href="/crud">📋 Context List</a>
+    <a href="/crud/system" class="active">🧠 System Prompt</a>
+    <a href="/unanswered">❌ Pesan error</a>
+    <a href="/connect" target="_blank">💬 Hubungkan Ke whatsapp</a>
+  </div>
+
+  <div class="main">
+    <h1>🧠 System Prompt List</h1>
+    
+
+    <div class="prompt-list">
+      <% prompts.forEach(p => { %>
+        <div class="prompt-item">
+          <div class="content collapsed"><%= p.prompt %></div>
+          <button class="toggle-btn">Lihat Selengkapnya</button>
+          <div class="actions">
+            <a href="/crud/system/edit/<%= p.id %>">✏️ Edit</a>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.prompt-item').forEach(item => {
+      const content = item.querySelector('.content');
+      const button = item.querySelector('.toggle-btn');
+
+      const clone = content.cloneNode(true);
+      clone.style.visibility = 'hidden';
+      clone.style.position = 'absolute';
+      clone.style.height = 'auto';
+      clone.style.webkitLineClamp = 'unset';
+      clone.classList.add('expanded');
+      document.body.appendChild(clone);
+
+      const fullHeight = clone.scrollHeight;
+      document.body.removeChild(clone);
+
+      const lineHeight = parseFloat(getComputedStyle(content).lineHeight) || 20;
+      const maxHeight = lineHeight * 3;
+
+      if (fullHeight > maxHeight) {
+        button.style.display = 'inline';
+      }
+
+      button.addEventListener('click', () => {
+        content.classList.toggle('expanded');
+        button.textContent = content.classList.contains('expanded')
+          ? 'Sembunyikan'
+          : 'Lihat Selengkapnya';
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title><%= prompt.id ? 'Edit' : 'Tambah' %> Prompt</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fa;
+      padding: 40px;
+      color: #333;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      max-width: 600px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    button[type="submit"] {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #218838;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+
+      form {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1><%= prompt.id ? '✏️ Edit' : '➕ Tambah' %> Prompt</h1>
+
+  <form method="POST" action="<%= action %>">
+    
+    <label for="kategori">Kategori:</label>
+    <select name="kategori" id="kategori" required>
+      <option value="">-- Pilih Kategori --</option>
+      <option value="pricelist" <%= prompt.kategori === 'pricelist' ? 'selected' : '' %>>Pricelist</option>
+      <option value="faq" <%= prompt.kategori === 'faq' ? 'selected' : '' %>>FAQ</option>
+      <option value="fitur" <%= prompt.kategori === 'fitur' ? 'selected' : '' %>>Fitur</option>
+      <option value="tutorial" <%= prompt.kategori === 'tutorial' ? 'selected' : '' %>>Tutorial</option>
+    </select>
+
+    <label for="content">Konten:</label>
+    <textarea name="context" id="context" required><%= prompt.contextt || '' %></textarea>
+
+    <button type="submit">💾 Simpan</button>
+  </form>
+
+  <a href="/crud">⬅️ Kembali ke Daftar Prompt</a>
+
+</body>
+</html>
