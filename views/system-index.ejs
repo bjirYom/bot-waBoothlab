@@ -115,12 +115,14 @@
 </head>
 <body>
   <div class="sidebar">
-    <h2>📚 Boothlab</h2>
-    <a href="/crud">📋 Context List</a>
-    <a href="/crud/system" class="active">🧠 System Prompt</a>
-    <a href="/unanswered">❌ Pesan error</a>
-    <a href="/connect" target="_blank">💬 Hubungkan Ke whatsapp</a>
-  </div>
+  <h2>📚 Boothlab</h2>
+  <a href="/users" class="active">👤 Users</a>
+  <a href="/context">📋 Context List</a>
+  <a href="/system_prompt">🧠 System Prompt</a>
+  <a href="/unanswered">❌ Pesan error</a>
+  <a href="/connect" target="_blank">💬 Hubungkan Ke WhatsApp</a>
+  <a href="/logout">🚪 Logout</a>  <!-- Tambahkan ini -->
+</div>
 
   <div class="main">
     <h1>🧠 System Prompt List</h1>
@@ -132,7 +134,7 @@
           <div class="content collapsed"><%= p.prompt %></div>
           <button class="toggle-btn">Lihat Selengkapnya</button>
           <div class="actions">
-            <a href="/crud/system/edit/<%= p.id %>">✏️ Edit</a>
+            <a href="/system_prompt/edit/<%= p.id %>">✏️ Edit</a>
           </div>
         </div>
       <% }) %>

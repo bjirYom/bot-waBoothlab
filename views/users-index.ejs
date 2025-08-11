@@ -2,21 +2,15 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Pesan Tak Terjawab</title>
+  <title>Daftar Users</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
       display: flex;
       min-height: 100vh;
       background-color: #f0f2f5;
     }
-
     .sidebar {
       width: 220px;
       background-color: #343a40;
@@ -25,14 +19,12 @@
       flex-direction: column;
       padding: 20px;
     }
-
     .sidebar h2 {
       margin-bottom: 30px;
       font-size: 22px;
       color: #ffc107;
       text-align: center;
     }
-
     .sidebar a {
       color: #ccc;
       text-decoration: none;
@@ -42,75 +34,56 @@
       display: block;
       transition: 0.3s;
     }
-
-    .sidebar a:hover,
-    .sidebar a.active {
+    .sidebar a:hover, .sidebar a.active {
       background-color: #495057;
       color: #fff;
     }
-
-    .main {
-      flex: 1;
-      padding: 30px;
-    }
-
-    h1 {
+    .main { flex: 1; padding: 30px; }
+    h1 { margin-bottom: 20px; color: #333; }
+    .add-btn {
+      display: inline-block;
       margin-bottom: 20px;
-      color: #333;
+      padding: 10px 16px;
+      background-color: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
     }
-
-    .message-list {
+    .add-btn:hover { background-color: #218838; }
+    .prompt-list {
       background-color: #fff;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-
-    .message-item {
+    .prompt-item {
       border-bottom: 1px solid #eee;
       padding: 15px 0;
     }
-
-    .message-item:last-child {
-      border-bottom: none;
-    }
-
-    .nomer {
+    .prompt-item:last-child { border-bottom: none; }
+    .kategori {
       font-weight: bold;
-      color: #17a2b8;
+      color: #007bff;
       margin-bottom: 5px;
     }
-
-    .content {
-      margin: 5px 0;
-      color: #555;
-      white-space: pre-line;
+    .content { margin: 5px 0; color: #555; }
+    .actions a {
+      margin-right: 10px;
+      text-decoration: none;
+      color: #007bff;
     }
-
-    .timestamp {
-      font-size: 12px;
-      color: #888;
-    }
-
+    .actions a:hover { text-decoration: underline; }
     @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
-
+      body { flex-direction: column; }
       .sidebar {
         width: 100%;
         flex-direction: row;
         justify-content: space-around;
         padding: 10px;
       }
-
-      .sidebar h2 {
-        display: none;
-      }
-
-      .main {
-        padding: 20px;
-      }
+      .sidebar h2 { display: none; }
+      .main { padding: 20px; }
     }
   </style>
 </head>
@@ -125,28 +98,26 @@
   <a href="/logout">🚪 Logout</a>  <!-- Tambahkan ini -->
 </div>
 
+
   <div class="main">
-    <h1>❌ Pesan yang Tidak Terjawab</h1>
+    <h1>👤 Daftar Users</h1>
+    <a class="add-btn" href="/users/add">➕ Tambah User Baru</a>
 
-    <div class="message-list">
-      <% if (messages.length === 0) { %>
-        <p>Tidak ada pesan yang belum terjawab.</p>
+    <div class="prompt-list">
+      <% if (users.length === 0) { %>
+        <p>Tidak ada user.</p>
       <% } else { %>
-        <% messages.forEach(msg => { %>
-          <div class="message-item">
-            <div class="nomer">
-  📱 
-  <% if (msg.nomer) { %>
-    <a href="https://wa.me/<%= msg.nomer.replace(/\D/g, '') %>" target="_blank" style="color: #17a2b8; text-decoration: underline;">
-      <%= msg.nomer %>
-    </a>
-  <% } else { %>
-    Tidak diketahui
-  <% } %>
-</div>
-
-            <div class="content"><%= msg.message %></div>
-            <div class="timestamp">🕒 <%= new Date(msg.created_at).toLocaleString('id-ID') %></div>
+        <% users.forEach(u => { %>
+          <div class="prompt-item">
+            <div class="kategori">ID: <%= u.id %></div>
+            <div class="content">Username: <%= u.username %></div>
+            <div class="content">
+              Dibuat: <%= u.created_at ? new Date(u.created_at).toLocaleString('id-ID') : '-' %>
+            </div>
+            <div class="actions">
+              <a href="/users/edit/<%= u.id %>">✏️ Edit</a>
+              <a href="/users/delete/<%= u.id %>" onclick="return confirm('Hapus user ini?')">🗑️ Hapus</a>
+            </div>
           </div>
         <% }) %>
       <% } %>

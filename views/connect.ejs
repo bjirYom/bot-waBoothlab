@@ -107,15 +107,31 @@
 </head>
 <body>
   <div class="sidebar">
-    <h2>📚 Boothlab</h2>
-    <a href="/crud">📋 Context List</a>
-    <a href="/crud/system" >🧠 System Prompt</a>
-    <a href="/unanswered">❌ Pesan error</a>
-    <a href="/connect" class="active">💬 Hubungkan Ke whatsapp</a>
-  </div>
+  <h2>📚 Boothlab</h2>
+  <a href="/users" class="active">👤 Users</a>
+  <a href="/context">📋 Context List</a>
+  <a href="/system_prompt">🧠 System Prompt</a>
+  <a href="/unanswered">❌ Pesan error</a>
+  <a href="/connect" target="_blank">💬 Hubungkan Ke WhatsApp</a>
+  <a href="/logout">🚪 Logout</a>  <!-- Tambahkan ini -->
+</div>
 
   <div class="main">
     <h1>💬 Hubungkan ke WhatsApp</h1>
+
+    <form action="/reset-auth" method="POST" style="text-align: center; margin-top: 20px;">
+  <button type="submit" style="
+    background-color: #dc3545; 
+    color: white; 
+    border: none; 
+    padding: 10px 20px; 
+    font-size: 16px; 
+    border-radius: 5px; 
+    cursor: pointer;">
+    🔄 Reset & Generate QR Baru
+  </button>
+</form>
+
 
    <div id="qrcode">
   <% if (qr) { %>

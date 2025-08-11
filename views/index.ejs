@@ -163,16 +163,18 @@
 </head>
 <body>
   <div class="sidebar">
-    <h2>📚 Boothlab</h2>
-    <a href="/crud" class="active">📋 Context List</a>
-    <a href="/crud/system" >🧠 System Prompt</a>
-    <a href="/unanswered">❌ Pesan error</a>
-    <a href="/connect" target="_blank">💬 Hubungkan Ke whatsapp</a>
-  </div>
+  <h2>📚 Boothlab</h2>
+  <a href="/users" class="active">👤 Users</a>
+  <a href="/context">📋 Context List</a>
+  <a href="/system_prompt">🧠 System Prompt</a>
+  <a href="/unanswered">❌ Pesan error</a>
+  <a href="/connect" target="_blank">💬 Hubungkan Ke WhatsApp</a>
+  <a href="/logout">🚪 Logout</a>  <!-- Tambahkan ini -->
+</div>
 
   <div class="main">
     <h1>🧠 Context Prompt List</h1>
-    <a class="add-btn" href="/crud/new">➕ Tambah Context Baru</a>
+    <a class="add-btn" href="/context/new">➕ Tambah Context Baru</a>
 
     <div class="prompt-list">
       <% prompts.forEach(p => { %>
@@ -181,8 +183,8 @@
           <div class="content collapsed"><%= p.context %></div>
           <button class="toggle-btn">Lihat Selengkapnya</button>
           <div class="actions">
-            <a href="/crud/edit/<%= p.id %>">✏️ Edit</a>
-            <a href="/crud/delete/<%= p.id %>" onclick="return confirm('Hapus?')">🗑️ Hapus</a>
+            <a href="/context/edit/<%= p.id %>">✏️ Edit</a>
+            <a href="/context/delete/<%= p.id %>" onclick="return confirm('Hapus?')">🗑️ Hapus</a>
           </div>
         </div>
       <% }) %>

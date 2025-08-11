@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title><%= prompt.id ? 'Edit' : 'Tambah' %> System Prompt</title>
+  <title><%= user && user.id ? 'Edit' : 'Tambah' %> User</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -11,10 +11,7 @@
       padding: 40px;
       color: #333;
     }
-    h1 {
-      margin-bottom: 30px;
-      color: #333;
-    }
+    h1 { margin-bottom: 30px; color: #333; }
     form {
       background-color: #fff;
       padding: 25px;
@@ -28,15 +25,13 @@
       margin-bottom: 8px;
       font-weight: 600;
     }
-    textarea {
+    input {
       width: 100%;
       padding: 10px;
       border-radius: 5px;
       border: 1px solid #ccc;
       margin-bottom: 20px;
       font-size: 16px;
-      resize: vertical;
-      min-height: 120px;
     }
     button[type="submit"] {
       background-color: #28a745;
@@ -47,9 +42,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    button[type="submit"]:hover {
-      background-color: #218838;
-    }
+    button[type="submit"]:hover { background-color: #218838; }
     a {
       display: inline-block;
       margin-top: 10px;
@@ -57,9 +50,7 @@
       color: #007bff;
       font-weight: 500;
     }
-    a:hover {
-      text-decoration: underline;
-    }
+    a:hover { text-decoration: underline; }
     @media (max-width: 600px) {
       body { padding: 20px; }
       form { padding: 20px; }
@@ -68,16 +59,22 @@
 </head>
 <body>
 
-  <h1><%= prompt.id ? '✏️ Edit' : '➕ Tambah' %> System Prompt</h1>
+  <h1><%= user && user.id ? '✏️ Edit' : '➕ Tambah' %> User</h1>
 
-  <form method="POST" action="<%= action %>">
-    <label for="prompt">Isi Prompt:</label>
-    <textarea name="prompt" id="prompt" required><%= prompt.prompt || '' %></textarea>
+  <form method="POST" action="<%= user && user.id ? '/users/edit/' + user.id : '/users/add' %>">
+    
+    <label for="username">Username:</label>
+    <input type="text" name="username" id="username" value="<%= user && user.username ? user.username : '' %>" required>
+
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" <%= user && user.id ? '' : 'required' %>>
 
     <button type="submit">💾 Simpan</button>
   </form>
 
-  <a href="/system_prompt">⬅️ Kembali ke Daftar System Prompt</a>
+  <a href="/users">⬅️ Kembali ke Daftar Users</a>
+
+
 
 </body>
 </html>

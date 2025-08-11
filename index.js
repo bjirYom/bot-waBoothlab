@@ -8,46 +8,85 @@ const qrcodeTerminal = require('qrcode-terminal');
 const QRCode = require('qrcode');
 const axios = require('axios');
 const mysql = require('mysql2/promise');
-const fs = require('fs');
+const session = require('express-session');
 
 
-// HAPUS OTOMATIS AUTH FOLDER SETIAP STARTUP
-const authPath = path.join(__dirname, '.wwebjs_auth');
-try {
-    if (fs.existsSync(authPath)) {
-        fs.rmSync(authPath, { recursive: true, force: true });
-        console.log('🧹 Folder .wwebjs_auth berhasil dihapus saat server start. QR baru akan dibuat.');
-    }
-} catch (err) {
-    console.error('❌ Gagal hapus folder auth saat startup:', err.message);
-}
+
 
 let currentQR = null;
 let isConnected = false;
+let connectedNumber = null;
 
+// ✅ Import route 
+const authRoutes = require('./auth');
 const crudRoutes = require('./crud');
 
+
+// ✅ Database pool (lebih cepat)
 const db = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
-    database: process.env.DB_NAME
+    database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
+// ✅ Simpan session WA (tidak hapus auth)
 const client = new Client({
-    authStrategy: new LocalAuth()
+    authStrategy: new LocalAuth({ dataPath: path.join(__dirname, '.wwebjs_auth') })
 });
 
+// ✅ EJS setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/crud', crudRoutes);
+
+
+app.use(session({
+    secret: 'rahasia-super-aman', // ganti dengan string random
+    resave: false,
+    saveUninitialized: false
+}));
+
+// Middleware untuk proteksi route
+app.use((req, res, next) => {
+    // Kalau sudah login, lanjut
+    if (req.session.user) {
+        return next();
+    }
+
+    // Boleh akses halaman login dan /
+    if (req.path === '/login' || req.path === '/') {
+        return next();
+    }
+
+    // Kalau belum login, redirect ke login
+    res.redirect('/login');
+});
+
+
+app.use('/', authRoutes);
+app.use('/', crudRoutes);
+
+
+
+
+
 
 // ===============================
-// SYSTEM PROMPT
+// SYSTEM PROMPT (pakai cache)
 // ===============================
+let promptCache = { data: null, lastUpdate: 0 };
+
 async function getSystemPrompt() {
+    const now = Date.now();
+    if (promptCache.data && (now - promptCache.lastUpdate) < 60000) {
+        return promptCache.data; // pakai cache 1 menit
+    }
+
     const [introRows] = await db.query(`SELECT prompt FROM system_prompt ORDER BY id DESC LIMIT 1`);
     const [rows] = await db.query(`
         SELECT kategori, context FROM context 
@@ -69,6 +108,7 @@ async function getSystemPrompt() {
         prompt += `📌 *${kategori.toUpperCase()}*\n${items.join('\n')}\n\n`;
     }
 
+    promptCache = { data: prompt, lastUpdate: now };
     return prompt;
 }
 
@@ -92,8 +132,6 @@ client.on('qr', async (qr) => {
     }
 });
 
-let connectedNumber = null;
-
 client.on('ready', async () => {
     isConnected = true;
     const info = await client.info;
@@ -101,15 +139,12 @@ client.on('ready', async () => {
     console.log(`🤖 Bot siap digunakan! Terhubung ke nomor: ${connectedNumber}`);
 });
 
-
 client.on('message', async (message) => {
     if (message.fromMe) return;
 
     const userId = message.from;
     const userMessage = message.body.trim();
     if (!userMessage) return;
-
-
 
     if (!chatHistory[userId]) chatHistory[userId] = [];
     chatHistory[userId].push({ role: 'user', content: userMessage });
@@ -191,30 +226,50 @@ app.get('/unanswered', async (req, res) => {
 });
 
 app.get('/connect', (req, res) => {
-  res.render('connect', {
-    qr: currentQR,
-    isConnected,
-    connectedNumber
-  });
+    res.render('connect', {
+        qr: currentQR,
+        isConnected,
+        connectedNumber
+    });
 });
 
+const fs = require('fs');
 
 app.post('/reset-auth', async (req, res) => {
     try {
+        const authPath = path.join(__dirname, '.wwebjs_auth');
+
+        // Stop dulu client
+        await client.destroy();
+        console.log('🛑 Client WhatsApp dimatikan.');
+
+        // Hapus folder auth
         if (fs.existsSync(authPath)) {
             fs.rmSync(authPath, { recursive: true, force: true });
             console.log('🧹 Folder .wwebjs_auth berhasil dihapus.');
         }
+
+        // Reset variabel status
+        currentQR = null;
+        isConnected = false;
+        connectedNumber = null;
+
+        // Start ulang client
+        client.initialize();
+        console.log('♻️ Client WhatsApp diinisialisasi ulang.');
+
         res.redirect('/connect');
     } catch (err) {
-        console.error('❌ Gagal hapus folder auth:', err.message);
+        console.error('❌ Gagal reset auth:', err.message);
         res.status(500).send('Gagal reset auth.');
     }
 });
+
+
 
 // ===============================
 // START SERVER
 // ===============================
 app.listen(3000, () => {
-    console.log('🌐 Akses halaman CRUD di http://localhost:3000/crud');
+    console.log('🌐 Server berjalan di http://localhost:3000');
 });
