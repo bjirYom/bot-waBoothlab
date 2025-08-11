@@ -1,18 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2/promise');
-const bcrypt = require('bcryptjs');
-require('dotenv').config(); // supaya bisa pakai env di sini juga
+require('dotenv').config();
 
-// Buat koneksi pool di sini
 const db = mysql.createPool({
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 router.get('/login', (req, res) => {
@@ -34,8 +36,9 @@ router.post('/login', async (req, res) => {
         }
 
         const user = rows[0];
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
+
+        // ✅ Cek langsung tanpa hash
+        if (password !== user.password) {
             return res.send('Login gagal, password salah!');
         }
 
@@ -53,12 +56,10 @@ router.post('/login', async (req, res) => {
     }
 });
 
-
 router.get('/logout', (req, res) => {
     req.session.destroy(() => {
         res.redirect('/login');
     });
 });
-
 
 module.exports = router;

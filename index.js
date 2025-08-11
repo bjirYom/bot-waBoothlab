@@ -25,6 +25,7 @@ const crudRoutes = require('./crud');
 // ✅ Database pool (lebih cepat)
 const db = mysql.createPool({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT, // <— ini kalau beda port
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
@@ -32,6 +33,7 @@ const db = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0
 });
+
 
 // ✅ Simpan session WA (tidak hapus auth)
 const client = new Client({
